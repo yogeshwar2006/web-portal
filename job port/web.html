@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ProJob Board - Mini Project</title>
+
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+  }
+  body, html {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0d1b2a;
+    color: #e0e0e0;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Background animation container */
+  #background {
+    position: fixed;
+    top:0; left:0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  }
+
+  /* Floating circles animation */
+  .circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0% {
+      transform: translateY(100vh) scale(1);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.3;
+    }
+    100% {
+      transform: translateY(-20vh) scale(1.3);
+      opacity: 0;
+    }
+  }
+
+  /* Container */
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #31596a;
+  }
+  header h1 {
+    color: #61dafb;
+    font-weight: 700;
+    font-size: 1.8rem;
+    cursor: pointer;
+  }
+
+  nav a {
+    color: #a0c4ff;
+    margin-left: 1rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+  }
+  nav a:hover, nav a.active {
+    color: #61dafb;
+  }
+
+  /* Main content */
+  main {
+    margin-top: 1rem;
+    min-height: 70vh;
+  }
+
+  /* Welcome Section (Home Page) */
+  #home-welcome {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  #home-welcome h2 {
+    font-size: 2rem;
+    color: #61dafb;
+    margin-bottom: 0.5rem;
+  }
+  #home-welcome p {
+    font-size: 1.1rem;
+    color: #cfd8dc;
+  }
+
+  /* Job Cards */
+  .job-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap: 1.2rem;
+  }
+  .job-card {
+    background: #142f4a;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 6px rgba(97,218,251,0.4);
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .job-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 15px rgba(97,218,251,0.8);
+  }
+  .job-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #61dafb;
+    margin-bottom: 0.3rem;
+  }
+  .job-company {
+    color: #90caf9;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .job-location, .job-type {
+    font-size: 0.9rem;
+    color: #cfd8dc;
+  }
+
+  /* Job Detail */
+  #job-detail {
+    background: #142f4a;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(97,218,251,0.5);
+  }
+  #job-detail h3 {
+    color: #61dafb;
+    margin-bottom: 0.5rem;
+  }
+  #job-detail p {
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
+  }
+  #apply-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background: #61dafb;
+    border: none;
+    border-radius: 6px;
+    color: #0d1b2a;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  #apply-btn:hover {
+    background: #3bb0d1;
+  }
+
+  /* Dashboards and Forms */
+  form {
+    background: #142f4a;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(97,218,251,0.4);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  form label {
+    display: block;
+    margin: 0.7rem 0 0.3rem;
+    font-weight: 600;
+  }
+  form input, form select, form textarea {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+  }
+  form button {
+    background: #61dafb;
+    color: #0d1b2a;
+    font-weight: 700;
+    padding: 0.7rem 1.3rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  form button:hover {
+    background: #3bb0d1;
+  }
+
+  /* Search bar */
+  #search-bar {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  #search-input {
+    width: 80%;
+    max-width: 400px;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+
+  /* Icons container */
+  .icon-row {
+    margin: 1rem 0;
+    text-align: center;
+  }
+  .icon {
+    display: inline-block;
+    margin: 0 10px;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.3s, filter 0.3s;
+    color: #61dafb;
+    user-select: none;
+  }
+  .icon:hover, .icon:focus {
+    color: #90caf9;
+    filter: drop-shadow(0 0 4px #90caf9);
+  }
+
+  /* Notifications */
+  #notification {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #61dafb;
+    color: #0d1b2a;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #61dafb;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+    font-weight: 700;
+    z-index: 9999;
+  }
+  #notification.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Responsive */
+  @media(max-width: 600px){
+    header {
+      flex-direction: column;
+    }
+    nav a {
+      margin-left: 0;
+      margin-right: 1rem;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    #search-input {
+      width: 95%;
+    }
+  }
+</style>
+
+</head>
+<body>
+
+<div id="background"></div>
+
+<header>
+  <h1 id="logo" tabindex="0">ProJob Board</h1>
+  <nav>
+    <a href="#" class="nav-link active" data-page="home">Home</a>
+    <a href="#" class="nav-link" data-page="listings">Job Listings</a>
+    <a href="#" class="nav-link" data-page="employer">Employer Dashboard</a>
+    <a href="#" class="nav-link" data-page="candidate">Candidate Dashboard</a>
+    <a href="#" class="nav-link" data-page="login">Login</a>
+  </nav>
+</header>
+
+<main class="container" id="main-content">
+  <!-- Dynamic content loaded here -->
+</main>
+
+<div id="notification"></div>
+
+<script>
+    
+  // Background floating circles setup
+  const bg = document.getElementById('background');
+  const circlesCount = 25;
+
+  for(let i=0; i<circlesCount; i++){
+    const circle = document.createElement('div');
+    circle.classList.add('circle');
+    let size = Math.random() * 60 + 20;
+    circle.style.width = size + 'px';
+    circle.style.height = size + 'px';
+    circle.style.left = Math.random() * 100 + 'vw';
+    circle.style.animationDuration = (10 + Math.random()*15) + 's';
+    circle.style.animationDelay = (Math.random()*-20) + 's';
+    bg.appendChild(circle);
+  }
+
+  // Sample job data
+  const jobs = [
+    {
+      id: 1,
+      title: "Front-End Developer",
+      company: "TechCorp Solutions",
+      location: "Remote",
+      type: "Full-time",
+      description: "We seek a skilled Front-End Developer experienced with React.js and modern UI technologies to join our dynamic team.",
+      requirements: "Strong React knowledge, HTML/CSS, JS, and experience with REST APIs.",
+      postedDate: "2025-07-01"
+    },
+    {
+      id: 2,
+      title: "Backend Engineer",
+      company: "Innovatech",
+      location: "New York, NY",
+      type: "Full-time",
+      description: "Join our backend team to build scalable microservices using Node.js and MongoDB.",
+      requirements: "Node.js, Express, MongoDB, RESTful API experience.",
+      postedDate: "2025-06-28"
+    },
+    {
+      id: 3,
+      title: "Data Analyst",
+      company: "DataWorks",
+      location: "San Francisco, CA",
+      type: "Contract",
+      description: "Analyze complex datasets to support business decisions and optimize performance.",
+      requirements: "Python, SQL, Excel, and visualization tools.",
+      postedDate: "2025-07-03"
+    }
+  ];
+
+  // Reference elements
+  const mainContent = document.getElementById('main-content');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const notification = document.getElementById('notification');
+
+  // Helper to clear active nav
+  function setActiveNav(page) {
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.dataset.page === page);
+    });
+  }
+
+  // Show notification
+  function showNotification(msg) {
+    notification.textContent = msg;
+    notification.classList.add('show');
+    setTimeout(() => notification.classList.remove('show'), 3500);
+  }
+
+  // Render Home Page
+  function renderHome(){
+    setActiveNav('home');
+    mainContent.innerHTML = `
+      <section id="home-welcome">
+        <h2>Welcome to ProJob Board</h2>
+        <p>Your gateway to the best job opportunities in tech and beyond.</p>
+      </section>
+      <section>
+        <h3 style="color:#61dafb; margin-bottom:1rem;">Featured Jobs</h3>
+        <div class="job-list" id="featured-jobs">
+          ${jobs.slice(0,3).map(job => `
+            <div class="job-card" tabindex="0" data-id="${job.id}">
+              <div class="job-title">${job.title}</div>
+              <div class="job-company">${job.company}</div>
+              <div class="job-location"><strong>Location:</strong> ${job.location}</div>
+              <div class="job-type"><strong>Type:</strong> ${job.type}</div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+    `;
+
+    // Add click handlers to job cards
+    document.querySelectorAll('.job-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = parseInt(card.dataset.id);
+        renderJobDetail(id);
+      });
+      card.addEventListener('keypress', e => {
+        if(e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const id = parseInt(card.dataset.id);
+          renderJobDetail(id);
+        }
+      });
+    });
+  }
+
+  // Render Job Listings Page
+  function renderListings(){
+    setActiveNav('listings');
+    mainContent.innerHTML = `
+      <section id="search-bar">
+        <input type="search" id="search-input" placeholder="Search jobs by title, company, location..." aria-label="Search jobs" />
+      </section>
+      <section>
+        <h2 style="color:#61dafb; margin-bottom:1rem;">Job Listings</h2>
+        <div class="job-list" id="job-listings">
+          ${jobs.map(job => `
+            <div class="job-card" tabindex="0" data-id="${job.id}">
+              <div class="job-title">${job.title}</div>
+              <div class="job-company">${job.company}</div>
+              <div class="job-location"><strong>Location:</strong> ${job.location}</div>
+              <div class="job-type"><strong>Type:</strong> ${job.type}</div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+    `;
+
+    // Search filter
+    const searchInput = document.getElementById('search-input');
+    const jobList = document.getElementById('job-listings');
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      jobList.innerHTML = jobs.filter(job => {
+        return job.title.toLowerCase().includes(query) ||
+               job.company.toLowerCase().includes(query) ||
+               job.location.toLowerCase().includes(query);
+      }).map(job => `
+        <div class="job-card" tabindex="0" data-id="${job.id}">
+          <div class="job-title">${job.title}</div>
+          <div class="job-company">${job.company}</div>
+          <div class="job-location"><strong>Location:</strong> ${job.location}</div>
+          <div class="job-type"><strong>Type:</strong> ${job.type}</div>
+        </div>
+      `).join('');
+
+      // Add click events after re-render
+      document.querySelectorAll('.job-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = parseInt(card.dataset.id);
+          renderJobDetail(id);
+        });
+        card.addEventListener('keypress', e => {
+          if(e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const id = parseInt(card.dataset.id);
+            renderJobDetail(id);
+          }
+        });
+      });
+    });
+
+    // Add click handlers
+    document.querySelectorAll('.job-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = parseInt(card.dataset.id);
+        renderJobDetail(id);
+      });
+      card.addEventListener('keypress', e => {
+        if(e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const id = parseInt(card.dataset.id);
+          renderJobDetail(id);
+        }
+      });
+    });
+  }
+
+  // Render Job Detail Page
+  function renderJobDetail(id){
+    const job = jobs.find(j => j.id === id);
+    if(!job) {
+      mainContent.innerHTML = `<p>Job not found.</p>`;
+      return;
+    }
+    setActiveNav(null);
+    mainContent.innerHTML = `
+      <section id="job-detail" tabindex="0">
+        <h3>${job.title}</h3>
+        <p><strong>Company:</strong> ${job.company}</p>
+        <p><strong>Location:</strong> ${job.location}</p>
+        <p><strong>Job Type:</strong> ${job.type}</p>
+        <p><strong>Posted Date:</strong> ${job.postedDate}</p>
+        <p><strong>Description:</strong> ${job.description}</p>
+        <p><strong>Requirements:</strong> ${job.requirements}</p>
+        <button id="apply-btn" aria-label="Apply for this job">Apply Now</button>
+      </section>
+    `;
+
+    document.getElementById('apply-btn').addEventListener('click', () => {
+      renderApplicationForm(id);
+    });
+  }
+
+  // Render Application Form
+  function renderApplicationForm(jobId){
+    const job = jobs.find(j => j.id === jobId);
+    if(!job) return;
+    setActiveNav(null);
+    mainContent.innerHTML = `
+      <section>
+        <h2 style="color:#61dafb; text-align:center; margin-bottom:1rem;">Apply for ${job.title}</h2>
+        <form id="application-form" aria-label="Job application form">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" name="fullName" placeholder="Your full name" required />
+          
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Your email address" required />
+          
+          <label for="resume">Upload Resume (PDF)</label>
+          <input type="file" id="resume" name="resume" accept=".pdf" required />
+          
+          <label for="coverLetter">Cover Letter</label>
+          <textarea id="coverLetter" name="coverLetter" placeholder="Write your cover letter here..." rows="4"></textarea>
+          
+          <button type="submit">Submit Application</button>
+        </form>
+      </section>
+    `;
+
+    document.getElementById('application-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Validate and simulate email notification
+      showNotification(`Application submitted successfully for "${job.title}"!`);
+      renderHome();
+    });
+  }
+
+  // Employer Dashboard (mock)
+  function renderEmployerDashboard(){
+    setActiveNav('employer');
+    mainContent.innerHTML = `
+      <section>
+        <h2 style="color:#61dafb; margin-bottom:1rem;">Employer Dashboard</h2>
+        <form id="job-post-form" aria-label="Post a new job">
+          <label for="jobTitle">Job Title</label>
+          <input type="text" id="jobTitle" name="jobTitle" placeholder="Enter job title" required />
+          
+          <label for="companyName">Company Name</label>
+          <input type="text" id="companyName" name="companyName" placeholder="Your company name" required />
+          
+          <label for="jobLocation">Location</label>
+          <input type="text" id="jobLocation" name="jobLocation" placeholder="Job location" required />
+          
+          <label for="jobType">Job Type</label>
+          <select id="jobType" name="jobType" required>
+            <option value="" disabled selected>Select type</option>
+            <option>Full-time</option>
+            <option>Part-time</option>
+            <option>Contract</option>
+            <option>Internship</option>
+          </select>
+          
+          <label for="jobDescription">Job Description</label>
+          <textarea id="jobDescription" name="jobDescription" rows="4" placeholder="Describe the job" required></textarea>
+          
+          <label for="jobRequirements">Requirements</label>
+          <textarea id="jobRequirements" name="jobRequirements" rows="3" placeholder="Job requirements" required></textarea>
+          
+          <button type="submit">Post Job</button>
+        </form>
+      </section>
+    `;
+
+    document.getElementById('job-post-form').addEventListener('submit', e => {
+      e.preventDefault();
+      // Mock adding job (no backend)
+      showNotification('Job posted successfully!');
+      renderListings();
+    });
+  }
+
+  // Candidate Dashboard (mock)
+  function renderCandidateDashboard(){
+    setActiveNav('candidate');
+    mainContent.innerHTML = `
+      <section>
+        <h2 style="color:#61dafb; margin-bottom:1rem;">Candidate Dashboard</h2>
+        <p style="text-align:center; color:#cfd8dc;">Manage your profile and view your job applications here.</p>
+        <form id="profile-form" aria-label="Candidate profile form">
+          <label for="candName">Full Name</label>
+          <input type="text" id="candName" name="candName" placeholder="Your full name" required />
+          
+          <label for="candEmail">Email</label>
+          <input type="email" id="candEmail" name="candEmail" placeholder="Your email" required />
+          
+          <label for="candSkills">Skills</label>
+          <input type="text" id="candSkills" name="candSkills" placeholder="Your skills, comma separated" />
+          
+          <button type="submit">Update Profile</button>
+        </form>
+      </section>
+    `;
+
+    document.getElementById('profile-form').addEventListener('submit', e => {
+      e.preventDefault();
+      showNotification('Profile updated successfully!');
+      renderCandidateDashboard();
+    });
+  }
+
+  // Login Page (mock)
+  function renderLogin(){
+    setActiveNav('login');
+    mainContent.innerHTML = `
+      <section style="max-width: 400px; margin: 2rem auto;">
+        <h2 style="color:#61dafb; margin-bottom:1rem; text-align:center;">User Login</h2>
+        <form id="login-form" aria-label="Login form">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Enter username" required />
+          
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter password" required />
+          
+          <button type="submit">Login</button>
+        </form>
+      </section>
+    `;
+
+    document.getElementById('login-form').addEventListener('submit', e => {
+      e.preventDefault();
+      // Mock login success
+      showNotification('Login successful!');
+      renderHome();
+    });
+  }
+
+  // Navigation handler
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const page = link.dataset.page;
+      switch(page){
+        case 'home': renderHome(); break;
+        case 'listings': renderListings(); break;
+        case 'employer': renderEmployerDashboard(); break;
+        case 'candidate': renderCandidateDashboard(); break;
+        case 'login': renderLogin(); break;
+        default: renderHome();
+      }
+    });
+  });
+
+  // Logo click resets home
+  document.getElementById('logo').addEventListener('click', renderHome);
+  document.getElementById('logo').addEventListener('keypress', e => {
+    if(e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      renderHome();
+    }
+  });
+
+  // Initial page load
+  renderHome();
+
+</script>
+</body>
+</html>
